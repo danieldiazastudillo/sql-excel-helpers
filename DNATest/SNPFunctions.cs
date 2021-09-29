@@ -8,15 +8,18 @@ namespace DNATest
 {
     public class SNPFunctions
     {
+        /// <summary>
+        /// Diccionario con los valores que corresponden a booleanos. Permite revisar si el string en cuestión contiene alguno de estos datos
+        /// </summary>
         public static readonly IList<string> valoresBoolean = new ReadOnlyCollection<string> (new List<string> { "VERDADERO", "TRUE", "FALSO", "FALSE" });
 
 
 
         [ExcelFunction(Description = "Genera T-SQL para UPDATE con un valor simple de tipo FECHA")]
-        public static string SQLACTUALIZAFECHA(
-            [ExcelArgument(Name ="Nueva Fecha", Description = "Valor a actualizar de tipo fecha")] DateTime nuevaFecha,
+        public static string SQLUPDATEFECHA(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el UPDATE")] string nombreBD,
-            [ExcelArgument(Name = "Campo a Modificar", Description = "Nombre del campo que se desea modificar. ej.: fechaDeclaracion")] string campoModificacion,
+            [ExcelArgument(Name = "Campo fecha a modificar", Description = "Nombre del campo que se desea modificar. ej.: fechaDeclaracion")] string campoModificacion,
+            [ExcelArgument(Name ="Nueva Fecha", Description = "Valor a actualizar de tipo fecha")] DateTime nuevaFecha,                        
             [ExcelArgument(Name = "Nombre Campo Identificador", Description = "Campo Identificador fila. ej.: ProductoID")] string campoID,
             [ExcelArgument(Name = "valor Campo Identificador", Description = "VALOR del campo Identificador fila. ej.: 15987")] string valorCampoID)
         {                        
@@ -24,19 +27,19 @@ namespace DNATest
         }
 
         [ExcelFunction(Description = "Genera T-SQL para INSERT con un valor simple de tipo FECHA")]
-        public static string SQLINSERTAFECHA(
-            [ExcelArgument(Name = "Nueva Fecha", Description = "Valor para ser agregado al INSERT")] DateTime nuevafecha,
+        public static string SQLINSERTFECHA(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Sin prefijos como dbo o dbo_*. Ej.: SigcuePlantaDestino")] string nombreBD,
-            [ExcelArgument(Name = "Nombre Columna", Description = "Nombre columna donde se hará la inserción")] string nombreColumna)
+            [ExcelArgument(Name = "Nombre Columna", Description = "Nombre columna donde se hará la inserción")] string nombreColumna,
+            [ExcelArgument(Name = "Nueva Fecha", Description = "Valor para ser agregado al INSERT")] DateTime nuevafecha)
         {
             return $"INSERT INTO {nombreBD.Trim()} ({nombreColumna}) VALUES ({StringToSafeSQLDate(nuevafecha)});";
         }
 
         [ExcelFunction(Description = "Genera T-SQL para UPDATE con un valor simple de tipo BOOLEANO (VERDADERO/FALSO)")]
-        public static string SQLACTUALIZABOOLEANO(
-            [ExcelArgument(Name = "Nuevo Booleano", Description = "Puede ser texto VERDADERO/TRUE o FALSO/FALSE")] string nuevoBooleano,
+        public static string SQLUPDATEBOOLEANO(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el UPDATE")] string nombreBD,
             [ExcelArgument(Name = "Campo a Modificar", Description = "Nombre del campo que se desea modificar. ej.: utilizado")] string campoModificacion,
+            [ExcelArgument(Name = "Nuevo Booleano", Description = "Puede ser texto VERDADERO/TRUE o FALSO/FALSE")] string nuevoBooleano,                        
             [ExcelArgument(Name = "Nombre Campo Identificador", Description = "Campo Identificador fila. ej.: ProductoID")] string campoID,
             [ExcelArgument(Name = "valor Campo Identificador", Description = "VALOR del campo Identificador fila. ej.: 15987")] string valorCampoID)
         {
@@ -46,10 +49,10 @@ namespace DNATest
         }
 
         [ExcelFunction(Description = "Genera T-SQL para INSERT con un valor simple de tipo BOOLEANO (VERDADERO/FALSO)")]
-        public static string SQLINSERTABOOLEANO(
-            [ExcelArgument(Name = "Nuevo Booleano", Description = "Puede ser texto VERDADERO/TRUE o FALSO/FALSE")] string nuevoBooleano,
-            [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el INSERT")] string nombreBD,            
-            [ExcelArgument(Name = "Nombre Columna", Description = "Nombre de la columna donde se hará la inserción")] string nombreColumna)
+        public static string SQLINSERTBOOLEANO(
+            [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el INSERT")] string nombreBD,
+            [ExcelArgument(Name = "Nombre Columna", Description = "Nombre de la columna donde se hará la inserción")] string nombreColumna,
+            [ExcelArgument(Name = "Nuevo Booleano", Description = "Puede ser texto VERDADERO/TRUE o FALSO/FALSE")] string nuevoBooleano)                                    
         {
             string boolAsSQLString = translateBoolean(nuevoBooleano);
 
@@ -57,24 +60,23 @@ namespace DNATest
         }
 
 
-
         [ExcelFunction(Description = "Genera T-SQL para UPDATE con un valor simple de cualquier tipo, no generará conversiones")]
-        public static string SQLACTUALIZAGENERICO(
-            [ExcelArgument(Name = "Nuevo Valor", Description = "Permite texto, números o cualquier campo que no requiera modificación")] string nuevoValor,
+        public static string SQLUPDATEGENERICO(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el UPDATE")] string nombreBD,
             [ExcelArgument(Name = "Campo a Modificar", Description = "Nombre del campo que se desea modificar. ej.: utilizado")] string campoModificacion,
+            [ExcelArgument(Name = "Nuevo Valor", Description = "Permite texto, números o cualquier campo que no requiera modificación")] string nuevoValor,                        
             [ExcelArgument(Name = "Nombre Campo Identificador", Description = "Campo Identificador fila. ej.: ProductoID")] string campoID,
-            [ExcelArgument(Name = "valor Campo Identificador", Description = "VALOR del campo Identificador fila. ej.: 15987")] string valorCampoID)
+            [ExcelArgument(Name = "Valor Campo Identificador", Description = "VALOR del campo Identificador fila. ej.: 15987")] string valorCampoID)
         {            
             return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {nuevoValor} WHERE {campoID.Trim()} =  {valorCampoID.Trim()};";
         }
 
 
         [ExcelFunction(Description = "Genera T-SQL para INSERT con un valor simple de cualquier tipo, no generará conversiones")]
-        public static string SQLINSERTAGENERICO(
-            [ExcelArgument(Name = "Nuevo Valor", Description = "Permite texto, números o cualquier campo que no requiera modificación")] string nuevoValor,
+        public static string SQLINSERTGENERICO(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el INSERT")] string nombreBD,
-            [ExcelArgument(Name = "Nombre Columna", Description = "Nombre de la columna donde se insertará el dato")] string nombreColumna)
+            [ExcelArgument(Name = "Nombre Columna", Description = "Nombre de la columna donde se insertará el dato")] string nombreColumna,
+            [ExcelArgument(Name = "Nuevo Valor", Description = "Permite texto, números o cualquier campo que no requiera modificación")] string nuevoValor)            
         {
 
 
@@ -95,15 +97,15 @@ namespace DNATest
             [ExcelArgument(AllowReference = true, Name = "Rango con NOMBRES de columnas")] object nombresColumnas,
             [ExcelArgument(AllowReference = true, Name = "Rango con VALORES de columnas")] object valoresColumnas)
         {
-
             var stringColumnas = ExcelReferenceToString(nombresColumnas).statement;
             var stringValores = ExcelReferenceToString(valoresColumnas).statement;
-
-            return $"INSERT INTO {nombreBD.Trim()} ({stringColumnas}) VALUES ({stringValores});";
             
+
+            return $"INSERT INTO {nombreBD.Trim()} ({stringColumnas}) VALUES ({stringValores});";            
         }
 
 
+        [ExcelFunction(Description = "Genera T-SQL para UPDATE con múltiples valores, no generará conversiones")]
         public static string SQLUPDATEMULTIPLE(
             [ExcelArgument(Name = "Nombre BD", Description = "Nombre Base de para realizar el UPDATE")] string nombreBD,
             [ExcelArgument(AllowReference = true, Name = "Rango con NOMBRES de columnas")] object nombreColumnas,
@@ -140,6 +142,11 @@ namespace DNATest
         }
 
 
+        /// <summary>
+        /// Convierte un object reference correspondiente a un RANGO de Excel en un satatement T-SQL & una lista con los valores
+        /// </summary>
+        /// <param name="obj">Rango Excel (object reference true)</param>
+        /// <returns>Tupla con statement T-SQL y lista con valores</returns>
         private static (string statement, List<string> objList) ExcelReferenceToString(object obj)
         {
             if(obj is ExcelReference target)
@@ -161,7 +168,12 @@ namespace DNATest
         }
         
         
-
+        /// <summary>
+        /// Convierte un object reference de Excel valores separados por comas
+        /// </summary>
+        /// <param name="obj">Rango Excel</param>
+        /// <param name="separator">Separador para valores</param>
+        /// <returns></returns>
         private static string Obj2dToString(object[,] obj, string separator = ", ")
         {
             List<string> result = Obj2dToStringList(obj);
@@ -169,6 +181,12 @@ namespace DNATest
         }
 
 
+        /// <summary>
+        /// Entrega string con T-SQL. Además verifica si alguno de los valores es BOOLEANO y genera la traducción pertinente
+        /// de VERDADERO/TRUE = 1 && FALSO/FALSE = 0
+        /// </summary>
+        /// <param name="obj">Rango de Excel</param>
+        /// <returns></returns>
         private static List<string> Obj2dToStringList(object[,] obj)
         {
             var result = new List<string>();
@@ -188,18 +206,34 @@ namespace DNATest
             return result;
         }
 
+        /// <summary>
+        /// Convierte una sola celda de Excel (object) en string T-SQL. Verifica nulos.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         private static string ObjToString(object obj)
         {            
             return (obj == null) ? "NULL" : obj.ToString();
         }
 
-        private static string StringToSafeSQLDate(DateTime val)
+
+        /// <summary>
+        /// Genera desde un DateTime (celda tipo fecha) una instrucción T-SQL con safe-date (funciona en cualquier collation)
+        /// </summary>
+        /// <param name="excelDate">Fecha desde Excel</param>
+        /// <returns></returns>
+        private static string StringToSafeSQLDate(DateTime excelDate)
         {
-            return $"CAST('{val.Year}{val.Month:00}{val.Day:00}' as datetime)";
+            return $"CAST('{excelDate.Year}{excelDate.Month:00}{excelDate.Day:00}' as datetime)";
 
         }
 
 
+        /// <summary>
+        /// Traduce booleano desde VERDADERO/TRUE/FALSO/FALSE a los valores T-SQL correspondientes
+        /// </summary>
+        /// <param name="val">String (palabra) correspondiente a un booleano</param>
+        /// <returns>VERDADERO = 1 || FALSO = 0</returns>
         private static string translateBoolean(string val)
         {
             string newVal = val.Trim().ToUpper();
@@ -234,6 +268,5 @@ namespace DNATest
 
         //    return target;
         //}
-
     }
 }
