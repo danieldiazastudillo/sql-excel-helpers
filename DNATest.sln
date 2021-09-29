@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNATest", "DNATest\DNATest.csproj", "{65752B43-874C-45BE-9CE5-596FEBFE9049}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{65752B43-874C-45BE-9CE5-596FEBFE9049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65752B43-874C-45BE-9CE5-596FEBFE9049}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65752B43-874C-45BE-9CE5-596FEBFE9049}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65752B43-874C-45BE-9CE5-596FEBFE9049}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9FE2CA40-B9BF-48C0-9CE4-2049179BEBF8}
+	EndGlobalSection
+EndGlobal
