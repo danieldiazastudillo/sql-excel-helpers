@@ -43,7 +43,7 @@ namespace DNATest
             [ExcelArgument(Name = "Nombre Campo Identificador", Description = "Campo Identificador fila. ej.: ProductoID")] string campoID,
             [ExcelArgument(Name = "valor Campo Identificador", Description = "VALOR del campo Identificador fila. ej.: 15987")] string valorCampoID)
         {
-            string boolAsSQLString = translateBoolean(nuevoBooleano);
+            string boolAsSQLString = TranslateBoolean(nuevoBooleano);
 
             return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {boolAsSQLString} WHERE {campoID.Trim()} =  {valorCampoID.Trim()};";
         }
@@ -54,7 +54,7 @@ namespace DNATest
             [ExcelArgument(Name = "Nombre Columna", Description = "Nombre de la columna donde se hará la inserción")] string nombreColumna,
             [ExcelArgument(Name = "Nuevo Booleano", Description = "Puede ser texto VERDADERO/TRUE o FALSO/FALSE")] string nuevoBooleano)                                    
         {
-            string boolAsSQLString = translateBoolean(nuevoBooleano);
+            string boolAsSQLString = TranslateBoolean(nuevoBooleano);
 
             return $"INSERT INTO {nombreBD.Trim()} ({nombreColumna.Trim()}) VALUES ({boolAsSQLString});";
         }
@@ -68,7 +68,8 @@ namespace DNATest
             [ExcelArgument(Name = "Nombre Campo Identificador", Description = "Campo Identificador fila. ej.: ProductoID")] string campoID,
             [ExcelArgument(Name = "Valor Campo Identificador", Description = "VALOR del campo Identificador fila. ej.: 15987")] string valorCampoID)
         {            
-            return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {nuevoValor} WHERE {campoID.Trim()} =  {valorCampoID.Trim()};";
+
+            return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {nuevoValor.Trim()} WHERE {campoID.Trim()} =  {valorCampoID.Trim()};";
         }
 
 
@@ -78,7 +79,6 @@ namespace DNATest
             [ExcelArgument(Name = "Nombre Columna", Description = "Nombre de la columna donde se insertará el dato")] string nombreColumna,
             [ExcelArgument(Name = "Nuevo Valor", Description = "Permite texto, números o cualquier campo que no requiera modificación")] string nuevoValor)            
         {
-
 
             return $"INSERT INTO {nombreBD.Trim()} ({nombreColumna.Trim()}) VALUES ({nuevoValor.Trim()});";
         }
@@ -142,6 +142,25 @@ namespace DNATest
         }
 
 
+
+        private static string ReplaceCharInString(string val, string replace = ",", string replaceWith = ".")
+        {
+            return val.Replace(replace, replaceWith);
+        }
+
+
+        private static bool CheckIfStringIsNumber(string val)
+        {
+            int commaPos = val.IndexOf(",");
+
+            var pre = char.IsNumber(val, commaPos - 1);
+            var post = char.IsNumber(val, commaPos + 1);
+
+            return (pre == true && post == true);            
+        }
+
+
+
         /// <summary>
         /// Convierte un object reference correspondiente a un RANGO de Excel en un satatement T-SQL & una lista con los valores
         /// </summary>
@@ -195,11 +214,11 @@ namespace DNATest
             {
                 if (valoresBoolean.Any(i => v.ToString().Trim().ToUpper().Contains(i)))
                 {
-                    result.Add(translateBoolean(v.ToString()));
+                    result.Add(TranslateBoolean(v.ToString()));
                 }
                 else
                 {
-                    result.Add(ObjToString(v));                    
+                    result.Add(ObjToString(v));                                        
                 }
             }
 
@@ -234,7 +253,7 @@ namespace DNATest
         /// </summary>
         /// <param name="val">String (palabra) correspondiente a un booleano</param>
         /// <returns>VERDADERO = 1 || FALSO = 0</returns>
-        private static string translateBoolean(string val)
+        private static string TranslateBoolean(string val)
         {
             string newVal = val.Trim().ToUpper();
 
