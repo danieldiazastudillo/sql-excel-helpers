@@ -1,0 +1,36 @@
+name: Build NET XLL
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+    
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: MSBuild Configuration
+        uses: microsoft/setup-msbuild@v1
+        
+      - name: NuGet Configuration
+        uses: Nuget/setup-nuget@v1.0.5
+        
+      - name: Go to WORKSPACE
+        run: cd $GITHUB_WORKSPACE
+        
+      - name: Restore Packages
+        run: nuget restore DNATest.sln
+        
+      - name: Build XLL
+        run: |
+          msbuild.exe DNATest.sln /p:platform="Any CPU" /p:configuration="Release"
+          
+      - name: Upload Artifact        
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-artifact
+          path: bin/Release/DNATest-AddIn-packed.xll
