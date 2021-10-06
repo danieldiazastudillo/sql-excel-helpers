@@ -32,5 +32,14 @@ jobs:
       - name: Upload Artifact        
         uses: actions/upload-artifact@v2
         with:
-          name: my-artifact
+          name: DNATest-packed
           path: .\DNATest\bin\Release\DNATest-AddIn-packed.xll
+          
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            .\DNATest\bin\Release\DNATest-AddIn-packed.xll
+            .\DNATest\bin\Release\DNATest-AddIn64-packed.xll
+            
