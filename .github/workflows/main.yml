@@ -33,7 +33,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: DNATest-packed
-          path: .\DNATest\bin\Release\DNATest-AddIn-packed.xll
+          path: |
+            .\DNATest\bin\Release\DNATest-AddIn-packed.xll
+            .\DNATest\bin\Release\DNATest-AddIn64-packed.xll
           
       - name: Release
         uses: softprops/action-gh-release@v1
