@@ -16,18 +16,18 @@ namespace DNATest
 
 
         [ExcelFunction(Description = "Genera T-SQL para UPDATE con un valor simple de tipo FECHA")]
-        public static string SQLUPDATEFECHA(
+        public static string SQLUPDATEFECHASINGLE(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el UPDATE")] string nombreBD,
             [ExcelArgument(Name = "Campo fecha a modificar", Description = "Nombre del campo que se desea modificar. ej.: fechaDeclaracion")] string campoModificacion,
             [ExcelArgument(Name ="Nueva Fecha", Description = "Valor a actualizar de tipo fecha")] DateTime nuevaFecha,                        
             [ExcelArgument(Name = "Nombre Campo Identificador", Description = "Campo Identificador fila. ej.: ProductoID")] string campoID,
-            [ExcelArgument(Name = "valor Campo Identificador", Description = "VALOR del campo Identificador fila. ej.: 15987")] string valorCampoID)
+            [ExcelArgument(Name = "Valor Campo Identificador", Description = "VALOR del campo Identificador fila. ej.: 15987")] string valorCampoID)
         {                        
-            return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {StringToSafeSQLDate(nuevaFecha)} WHERE {campoID.Trim()} =  {valorCampoID.Trim()};";
+            return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {StringToSafeSQLDate(nuevaFecha)} WHERE {campoID.Trim()} = {valorCampoID.Trim()};";
         }
 
         [ExcelFunction(Description = "Genera T-SQL para INSERT con un valor simple de tipo FECHA")]
-        public static string SQLINSERTFECHA(
+        public static string SQLINSERTFECHASINGLE(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Sin prefijos como dbo o dbo_*. Ej.: SigcuePlantaDestino")] string nombreBD,
             [ExcelArgument(Name = "Nombre Columna", Description = "Nombre columna donde se hará la inserción")] string nombreColumna,
             [ExcelArgument(Name = "Nueva Fecha", Description = "Valor para ser agregado al INSERT")] DateTime nuevafecha)
@@ -36,7 +36,7 @@ namespace DNATest
         }
 
         [ExcelFunction(Description = "Genera T-SQL para UPDATE con un valor simple de tipo BOOLEANO (VERDADERO/FALSO)")]
-        public static string SQLUPDATEBOOLEANO(
+        public static string SQLUPDATEBOOLEANOSINGLE(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el UPDATE")] string nombreBD,
             [ExcelArgument(Name = "Campo a Modificar", Description = "Nombre del campo que se desea modificar. ej.: utilizado")] string campoModificacion,
             [ExcelArgument(Name = "Nuevo Booleano", Description = "Puede ser texto VERDADERO/TRUE o FALSO/FALSE")] string nuevoBooleano,                        
@@ -45,11 +45,11 @@ namespace DNATest
         {
             string boolAsSQLString = TranslateBoolean(nuevoBooleano);
 
-            return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {boolAsSQLString} WHERE {campoID.Trim()} =  {valorCampoID.Trim()};";
+            return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {boolAsSQLString} WHERE {campoID.Trim()} = {valorCampoID.Trim()};";
         }
 
         [ExcelFunction(Description = "Genera T-SQL para INSERT con un valor simple de tipo BOOLEANO (VERDADERO/FALSO)")]
-        public static string SQLINSERTBOOLEANO(
+        public static string SQLINSERTBOOLEANOSINGLE(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el INSERT")] string nombreBD,
             [ExcelArgument(Name = "Nombre Columna", Description = "Nombre de la columna donde se hará la inserción")] string nombreColumna,
             [ExcelArgument(Name = "Nuevo Booleano", Description = "Puede ser texto VERDADERO/TRUE o FALSO/FALSE")] string nuevoBooleano)                                    
@@ -61,7 +61,7 @@ namespace DNATest
 
 
         [ExcelFunction(Description = "Genera T-SQL para UPDATE con un valor simple de cualquier tipo, no generará conversiones")]
-        public static string SQLUPDATEGENERICO(
+        public static string SQLUPDATEGENERICOSINGLE(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el UPDATE")] string nombreBD,
             [ExcelArgument(Name = "Campo a Modificar", Description = "Nombre del campo que se desea modificar. ej.: utilizado")] string campoModificacion,
             [ExcelArgument(Name = "Nuevo Valor", Description = "Permite texto, números o cualquier campo que no requiera modificación")] string nuevoValor,                        
@@ -69,12 +69,12 @@ namespace DNATest
             [ExcelArgument(Name = "Valor Campo Identificador", Description = "VALOR del campo Identificador fila. ej.: 15987")] string valorCampoID)
         {            
 
-            return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {nuevoValor.Trim()} WHERE {campoID.Trim()} =  {valorCampoID.Trim()};";
+            return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {nuevoValor.Trim()} WHERE {campoID.Trim()} = {valorCampoID.Trim()};";
         }
 
 
         [ExcelFunction(Description = "Genera T-SQL para INSERT con un valor simple de cualquier tipo, no generará conversiones")]
-        public static string SQLINSERTGENERICO(
+        public static string SQLINSERTGENERICOSINGLE(
             [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el INSERT")] string nombreBD,
             [ExcelArgument(Name = "Nombre Columna", Description = "Nombre de la columna donde se insertará el dato")] string nombreColumna,
             [ExcelArgument(Name = "Nuevo Valor", Description = "Permite texto, números o cualquier campo que no requiera modificación")] string nuevoValor)            
@@ -85,14 +85,21 @@ namespace DNATest
 
 
         [ExcelFunction(Description = "Genera T-SQL con conversión de FECHA a string, el string generado es seguro para la inserción en cualquier servidor")]
-        public static string FECHASAFESQL([ExcelArgument(Name = "Valor de tipo FECHA", Description = "Debe ser de tipo FECHA")] DateTime fechaExcel)
+        public static string SQLFECHAEXCELASAFESQL([ExcelArgument(Name = "Valor de tipo FECHA", Description = "Debe ser de tipo FECHA")] DateTime fechaExcel)
         {
             return StringToSafeSQLDate(fechaExcel);
         }
 
 
-        [ExcelFunction(Description = "Genera T-SQL para INSERT con múltiples valores, no generará conversiones")]
-        public static string SQLINSERTINTOMULTIPLE(
+        [ExcelFunction(Description = "Genera string SQL concatenando comillas simples al inicio y fin del texto")]
+        public static string SQLTEXTOEXCELASTRINGSQL(string texto)
+        {
+            return $"'{texto.Trim()}'";
+        }
+
+
+        [ExcelFunction(Description = "Genera T-SQL para INSERT con múltiples valores")]
+        public static string SQLINSERTINTORANGO(
             [ExcelArgument(Name ="Nombre BD", Description = "Nombre Base de para realizar el INSERT")] string nombreBD,
             [ExcelArgument(AllowReference = true, Name = "Rango con NOMBRES de columnas")] object nombresColumnas,
             [ExcelArgument(AllowReference = true, Name = "Rango con VALORES de columnas")] object valoresColumnas)
@@ -105,8 +112,8 @@ namespace DNATest
         }
 
 
-        [ExcelFunction(Description = "Genera T-SQL para UPDATE con múltiples valores, no generará conversiones")]
-        public static string SQLUPDATEMULTIPLE(
+        [ExcelFunction(Description = "Genera T-SQL para UPDATE con múltiples valores")]
+        public static string SQLUPDATERANGO(
             [ExcelArgument(Name = "Nombre BD", Description = "Nombre Base de para realizar el UPDATE")] string nombreBD,
             [ExcelArgument(AllowReference = true, Name = "Rango con NOMBRES de columnas")] object nombreColumnas,
             [ExcelArgument(AllowReference = true, Name = "Rango con VALORES de columnas")] object valoresColumnas,
@@ -139,6 +146,21 @@ namespace DNATest
                 throw new Exception("Los rangos de nombres de columna y valores no contienen la misma cantidad de items");
             }
             
+        }
+
+
+        //[ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el INSERT")] string nombreBD,        
+        //[ExcelArgument(Name = "Nombre Columna", Description = "Nombre de la columna donde se insertará el dato")] string nombreColumna,
+        //[ExcelArgument(Name = "Nuevo Valor", Description = "Permite texto, números o cualquier campo que no requiera modificación")] string nuevoValor)  
+
+
+        [ExcelFunction(Description = "Genera T-SQL para DELETE")]
+        public static string SQLDELETESINGLE(
+            [ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el DELETE FROM")] string nombreBD,
+            [ExcelArgument(Name = "Nombre Columna Identificador", Description = "Nombre columna identificadora para WHERE, generalmente columna PK")] string campoID,
+            [ExcelArgument(Name = "Valor ID Campo Identificador", Description = "Valor para Nombre Columna Identificador, generalmente corresponde al valor de la PK")] string valorID)
+        {
+            return $"DELETE FROM {nombreBD.Trim()} WHERE {campoID.Trim()} = {valorID.Trim()};";
         }
 
 
@@ -257,14 +279,14 @@ namespace DNATest
         {
             string newVal = val.Trim().ToUpper();
 
-            // castellano
+            // castellano. -1 para Access
             if (newVal == "VERDADERO" || newVal == "TRUE")
             {
                 return "1";
             }
 
             // ingles
-            if (newVal == "FALSO" || newVal == "FALSE")
+            if (newVal == "FALSO" || newVal == "FALSE" || newVal == "0")
             {
                 return "0";
             }
