@@ -112,9 +112,9 @@ namespace DNATest
         }
 
 
-        [ExcelFunction(Description = "Genera T-SQL para UPDATE con múltiples valores")]
+        [ExcelFunction(Description = "Genera T-SQL para UPDATE con múltiples valores con un PK o criterio simple")]
         public static string SQLUPDATERANGO(
-            [ExcelArgument(Name = "Nombre BD", Description = "Nombre Base de para realizar el UPDATE")] string nombreBD,
+            [ExcelArgument(Name = "Nombre BD", Description = "Nombre Base de Datos para realizar el UPDATE")] string nombreBD,
             [ExcelArgument(AllowReference = true, Name = "Rango con NOMBRES de columnas")] object nombreColumnas,
             [ExcelArgument(AllowReference = true, Name = "Rango con VALORES de columnas")] object valoresColumnas,
             [ExcelArgument(Name = "Nombre columna con ID", Description = "WHERE {columnaId} = 1234")] string columnaID,
@@ -147,6 +147,114 @@ namespace DNATest
             }
             
         }
+
+        [ExcelFunction(Description = "Genera T-SQL para UPDATE con múltiples valores con múltiples criterios o PKs")]
+        public static string SQLUPDATERANGOMULTIKEY(
+            [ExcelArgument(Name = "Nombre BD", Description = "Nombre Base de Datos para realizar el UPDATE")] string nombreBD,
+            [ExcelArgument(AllowReference = true, Name = "Rango con NOMBRES de columnas")] object nombreColumnas,
+            [ExcelArgument(AllowReference = true, Name = "Rango con VALORES de columnas")] object valoresColumnas,
+            [ExcelArgument(AllowReference = true, Name = "Rango con NOMBRES de columnas KEYS")] object nombresColumnasKeys,
+            [ExcelArgument(AllowReference = true, Name = "Rango con VALORES de columnas KEYS")] object valoresColumnasKeys)
+        {
+            var nomColRef = ExcelReferenceToString(nombreColumnas);
+            var valColRef = ExcelReferenceToString(valoresColumnas);
+
+            var nomColKeyRef = ExcelReferenceToString(nombresColumnasKeys);
+            var valColKeyRef = ExcelReferenceToString(valoresColumnasKeys);
+
+            List<string> updatePropsVal = new List<string>();            
+            string updatePart;
+
+            List<string> updateKeysVal = new List<string>();
+            string keysPart;
+
+            if (nomColRef.objList.Count() == valColRef.objList.Count())
+            {
+
+                int counter = 0;
+
+                foreach (var col in nomColRef.objList)
+                {
+                    string currentValue = $"{col} = {valColRef.objList[counter]}";
+                    updatePropsVal.Add(currentValue);
+                    counter++;
+                }
+
+                updatePart = string.Join(", ", updatePropsVal);
+
+            }
+            else
+            {
+                throw new Exception("Los rangos de nombres de columna y valores no contienen la misma cantidad de items");
+            }
+
+
+            if (nomColKeyRef.objList.Count() == valColKeyRef.objList.Count())
+            {
+
+                int counter = 0;
+
+                foreach (var col in nomColKeyRef.objList)
+                {
+                    string currentValue = $"{col} = {valColKeyRef.objList[counter]}";
+                    updateKeysVal.Add(currentValue);
+                    counter++;
+                }
+
+                keysPart = string.Join(" AND ", updateKeysVal);
+
+            }
+            else
+            {
+                throw new Exception("Los rangos de nombres de columna para criterios (PKs) y valores para criterios (PKs) no contienen la misma cantidad de items");
+            }
+
+
+            return $"UPDATE {nombreBD.Trim()} SET {updatePart} WHERE {keysPart};";
+        }
+
+
+        [ExcelFunction(Description = "Genera T-SQL para UPDATE con múltiples valores con un PK o criterio simple")]
+        public static string SQLUPDATESINGLEMULTIKEY(
+            [ExcelArgument(Name = "Nombre BD", Description = "Nombre Base de Datos para realizar el UPDATE")] string nombreBD,
+            [ExcelArgument(Name = "Campo a Modificar", Description = "Nombre del campo que se desea modificar. ej.: utilizado")] string campoModificacion,
+            [ExcelArgument(Name = "Nuevo Valor", Description = "Permite texto, números o cualquier campo que no requiera modificación")] string nuevoValor,
+            [ExcelArgument(AllowReference = true, Name = "Rango con NOMBRES de columnas KEYS")] object nombresColumnasKeys,
+            [ExcelArgument(AllowReference = true, Name = "Rango con VALORES de columnas KEYS")] object valoresColumnasKeys)
+        {
+            var nomColKeyRef = ExcelReferenceToString(nombresColumnasKeys);
+            var valColKeyRef = ExcelReferenceToString(valoresColumnasKeys);
+
+            List<string> updateKeysVal = new List<string>();
+            string keysPart;
+
+
+            if (nomColKeyRef.objList.Count() == valColKeyRef.objList.Count())
+            {
+
+                int counter = 0;
+
+                foreach (var col in nomColKeyRef.objList)
+                {
+                    string currentValue = $"{col} = {valColKeyRef.objList[counter]}";
+                    updateKeysVal.Add(currentValue);
+                    counter++;
+                }
+
+                keysPart = string.Join(" AND ", updateKeysVal);
+
+            }
+            else
+            {
+                throw new Exception("Los rangos de nombres de columna para criterios (PKs) y valores para criterios (PKs) no contienen la misma cantidad de items");
+            }
+
+            var newVal = TranslateBoolean(nuevoValor.Trim());
+
+            return $"UPDATE {nombreBD.Trim()} SET {campoModificacion.Trim()} = {newVal.Trim()} WHERE {keysPart};";
+
+        }
+
 
 
         //[ExcelArgument(Name = "Nombre Base de Datos", Description = "Base de datos en la cuál se generará el INSERT")] string nombreBD,        
@@ -291,7 +399,7 @@ namespace DNATest
                 return "0";
             }
 
-            return "";
+            return val;
 
         }
 
