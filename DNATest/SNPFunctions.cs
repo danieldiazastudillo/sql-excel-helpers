@@ -90,6 +90,12 @@ namespace DNATest
             return StringToSafeSQLDate(fechaExcel);
         }
 
+        [ExcelFunction(Description = "Genera T-SQL con conversión de FECHA a string con horario")]
+        public static string SQLFECHAEXCELASAFESQLWITHTIME([ExcelArgument(Name = "Valor de tipo FECHA con hora y minutos", Description = "Debe ser de tipo FECHA")] DateTime fechaExcel)
+        {
+            return StringToSafeSQLDateWithTime(fechaExcel);
+        }
+
 
         [ExcelFunction(Description = "Genera string SQL concatenando comillas simples al inicio y fin del texto")]
         public static string SQLTEXTOEXCELASTRINGSQL(string texto)
@@ -375,6 +381,11 @@ namespace DNATest
         {
             return $"CAST('{excelDate.Year}{excelDate.Month:00}{excelDate.Day:00}' as datetime)";
 
+        }
+
+        private static string StringToSafeSQLDateWithTime(DateTime excelDate)
+        {
+            return $"CAST('{excelDate.Year}{excelDate.Month:00}{excelDate.Day:00} {excelDate.Hour:00}:{excelDate.Minute:00}:{excelDate.Second:00}' as datetime)";
         }
 
 
